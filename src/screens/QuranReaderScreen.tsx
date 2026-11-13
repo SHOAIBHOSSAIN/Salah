@@ -10,6 +10,8 @@ import {
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/AppNavigator';
+import { useAppTheme } from '../theme/ThemeContext';
+import type { AppColors } from '../theme/ThemeContext';
 
 type ReaderProps = NativeStackScreenProps<RootStackParamList, 'QuranReader'>;
 type Verse = { number: number; text: string };
@@ -22,6 +24,8 @@ const SURAH_URL =
 
 export default function QuranReaderScreen(): React.JSX.Element {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const { colors } = useAppTheme();
+  const styles = createStyles(colors);
   const { params } = useRoute<ReaderProps['route']>();
   const [verses, setVerses] = useState<Verse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -127,7 +131,7 @@ export default function QuranReaderScreen(): React.JSX.Element {
         ListEmptyComponent={
           <View style={styles.emptyState}>
             {isLoading ? (
-              <ActivityIndicator color="#0F766E" />
+              <ActivityIndicator color={colors.accent} />
             ) : loadError ? (
               <>
                 <Text style={styles.emptyTitle}>Could not load verses</Text>
@@ -147,10 +151,10 @@ export default function QuranReaderScreen(): React.JSX.Element {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: AppColors) => StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#F5F8F7',
+    backgroundColor: colors.background,
   },
   content: {
     paddingHorizontal: 20,
@@ -169,12 +173,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   backIcon: {
-    color: '#12312E',
+    color: colors.text,
     fontSize: 36,
     lineHeight: 40,
   },
   headerLabel: {
-    color: '#71807D',
+    color: colors.textMuted,
     fontSize: 12,
     fontWeight: '700',
     letterSpacing: 1,
@@ -187,20 +191,20 @@ const styles = StyleSheet.create({
     paddingVertical: 28,
     marginBottom: 22,
     borderBottomWidth: 1,
-    borderBottomColor: '#DDE7E4',
+    borderBottomColor: colors.border,
   },
   surahName: {
-    color: '#12312E',
+    color: colors.text,
     fontSize: 25,
     fontWeight: '800',
   },
   arabicName: {
-    color: '#0F766E',
+    color: colors.accent,
     fontSize: 28,
     marginTop: 10,
   },
   surahMeta: {
-    color: '#71807D',
+    color: colors.textMuted,
     fontSize: 13,
     marginTop: 10,
   },
@@ -211,12 +215,12 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   versesHeadingText: {
-    color: '#12312E',
+    color: colors.text,
     fontSize: 18,
     fontWeight: '700',
   },
   versesCount: {
-    color: '#8A9995',
+    color: colors.textMuted,
     fontSize: 13,
   },
   verseRow: {
@@ -224,11 +228,11 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     paddingVertical: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#E1EAE7',
+    borderBottomColor: colors.border,
   },
   verseText: {
     flex: 1,
-    color: '#263B38',
+    color: colors.textSecondary,
     fontSize: 27,
     lineHeight: 52,
     textAlign: 'right',
@@ -240,12 +244,12 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#DCEFEA',
+    backgroundColor: colors.accentSoft,
     marginLeft: 12,
     marginTop: 7,
   },
   verseNumberText: {
-    color: '#0F766E',
+    color: colors.accent,
     fontSize: 12,
     fontWeight: '700',
   },
@@ -254,12 +258,12 @@ const styles = StyleSheet.create({
     paddingVertical: 40,
   },
   emptyTitle: {
-    color: '#52635F',
+    color: colors.textSecondary,
     fontSize: 17,
     fontWeight: '700',
   },
   emptyText: {
-    color: '#8A9995',
+    color: colors.textMuted,
     fontSize: 13,
     marginTop: 6,
   },

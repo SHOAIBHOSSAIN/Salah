@@ -8,6 +8,8 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { useAppTheme } from '../theme/ThemeContext';
+import type { AppColors } from '../theme/ThemeContext';
 
 type SettingRowProps = {
   icon: string;
@@ -24,6 +26,9 @@ function SettingRow({
   onPress,
   right,
 }: SettingRowProps): React.JSX.Element {
+  const { colors } = useAppTheme();
+  const styles = createStyles(colors);
+
   const content = (
     <>
       <View style={styles.rowIcon}>
@@ -60,9 +65,10 @@ function SettingRow({
 }
 
 export default function SettingsScreen(): React.JSX.Element {
+  const { isDark, setDarkMode, colors } = useAppTheme();
+  const styles = createStyles(colors);
   const [notifications, setNotifications] = useState(true);
   const [prayerReminder, setPrayerReminder] = useState(true);
-  const [darkMode, setDarkMode] = useState(false);
 
   const showComingSoon = (title: string) => {
     Alert.alert(title, 'This feature will be available soon.');
@@ -101,11 +107,11 @@ export default function SettingsScreen(): React.JSX.Element {
                 value={notifications}
                 onValueChange={setNotifications}
                 trackColor={{
-                  false: '#D5DEDB',
-                  true: '#9BD3C8',
+                  false: colors.border,
+                  true: colors.accentSoft,
                 }}
                 thumbColor={
-                  notifications ? '#0F766E' : '#F4F4F4'
+                  notifications ? colors.accent : '#F4F4F4'
                 }
               />
             }
@@ -122,11 +128,11 @@ export default function SettingsScreen(): React.JSX.Element {
                 value={prayerReminder}
                 onValueChange={setPrayerReminder}
                 trackColor={{
-                  false: '#D5DEDB',
-                  true: '#9BD3C8',
+                  false: colors.border,
+                  true: colors.accentSoft,
                 }}
                 thumbColor={
-                  prayerReminder ? '#0F766E' : '#F4F4F4'
+                  prayerReminder ? colors.accent : '#F4F4F4'
                 }
               />
             }
@@ -140,14 +146,14 @@ export default function SettingsScreen(): React.JSX.Element {
             subtitle="Use a darker appearance"
             right={
               <Switch
-                value={darkMode}
+                value={isDark}
                 onValueChange={setDarkMode}
                 trackColor={{
-                  false: '#D5DEDB',
-                  true: '#9BD3C8',
+                  false: colors.border,
+                  true: colors.accentSoft,
                 }}
                 thumbColor={
-                  darkMode ? '#0F766E' : '#F4F4F4'
+                  isDark ? colors.accent : '#F4F4F4'
                 }
               />
             }
@@ -258,10 +264,10 @@ export default function SettingsScreen(): React.JSX.Element {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: AppColors) => StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#F5F8F7',
+    backgroundColor: colors.background,
   },
 
   container: {
@@ -280,14 +286,14 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 30,
     fontWeight: '800',
-    color: '#12312E',
+    color: colors.text,
     letterSpacing: -0.5,
   },
 
   subtitle: {
     marginTop: 5,
     fontSize: 14,
-    color: '#71807D',
+    color: colors.textMuted,
   },
 
   headerIcon: {
@@ -296,30 +302,30 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#DCEFEA',
+    backgroundColor: colors.accentSoft,
   },
 
   headerIconText: {
     fontSize: 23,
-    color: '#0F766E',
+    color: colors.accent,
   },
 
   // Sections
   sectionTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#52635F',
+    color: colors.textMuted,
     marginBottom: 10,
     marginLeft: 3,
   },
 
   card: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.surface,
     borderRadius: 18,
     paddingHorizontal: 16,
     marginBottom: 24,
 
-    shadowColor: '#12312E',
+    shadowColor: colors.text,
     shadowOffset: {
       width: 0,
       height: 2,
@@ -342,7 +348,7 @@ const styles = StyleSheet.create({
     borderRadius: 13,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#EAF4F1',
+    backgroundColor: colors.surfaceRaised,
     marginRight: 13,
   },
 
@@ -357,25 +363,25 @@ const styles = StyleSheet.create({
 
   rowTitle: {
     fontSize: 15,
-    color: '#263B38',
+    color: colors.textSecondary,
   },
 
   rowSubtitle: {
     fontSize: 11,
-    color: '#899692',
+    color: colors.textMuted,
     marginTop: 3,
   },
 
   chevron: {
     fontSize: 27,
     fontWeight: '300',
-    color: '#A0ACA9',
+    color: colors.textMuted,
     marginLeft: 5,
   },
 
   separator: {
     height: StyleSheet.hairlineWidth,
-    backgroundColor: '#E7ECEA',
+    backgroundColor: colors.border,
     marginLeft: 55,
   },
 
@@ -389,18 +395,18 @@ const styles = StyleSheet.create({
   appName: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#53645F',
+    color: colors.textSecondary,
   },
 
   version: {
     fontSize: 11,
-    color: '#9AA5A2',
+    color: colors.textMuted,
     marginTop: 4,
   },
 
   footerMessage: {
     fontSize: 12,
-    color: '#A0AAA7',
+    color: colors.textMuted,
     marginTop: 15,
   },
 });

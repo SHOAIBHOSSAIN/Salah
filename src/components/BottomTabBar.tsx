@@ -5,6 +5,8 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { useAppTheme } from '../theme/ThemeContext';
+import type { AppColors } from '../theme/ThemeContext';
 
 export type TabItem = {
   key: string;
@@ -23,6 +25,9 @@ export default function BottomTabBar({
   activeTab,
   onTabPress,
 }: BottomTabBarProps): React.JSX.Element {
+  const { colors } = useAppTheme();
+  const styles = createStyles(colors);
+
   return (
     <View style={styles.container}>
       <View style={styles.tabBar}>
@@ -68,9 +73,9 @@ export default function BottomTabBar({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: AppColors) => StyleSheet.create({
   container: {
-    backgroundColor: '#F5F8F7',
+    backgroundColor: colors.background,
     paddingHorizontal: 16,
     paddingTop: 8,
     paddingBottom: 12,
@@ -81,10 +86,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-around',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.surface,
     borderRadius: 20,
 
-    shadowColor: '#12312E',
+    shadowColor: colors.text,
     shadowOffset: {
       width: 0,
       height: 4,
@@ -110,27 +115,27 @@ const styles = StyleSheet.create({
   },
 
   activeIconContainer: {
-    backgroundColor: '#DCEFEA',
+    backgroundColor: colors.accentSoft,
   },
 
   icon: {
     fontSize: 20,
-    color: '#8A9995',
+    color: colors.textMuted,
   },
 
   activeIcon: {
-    color: '#0F766E',
+    color: colors.accent,
   },
 
   label: {
     marginTop: 3,
     fontSize: 11,
     fontWeight: '500',
-    color: '#8A9995',
+    color: colors.textMuted,
   },
 
   activeLabel: {
-    color: '#0F766E',
+    color: colors.accent,
     fontWeight: '700',
   },
 });

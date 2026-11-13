@@ -11,6 +11,8 @@ import {
   View,
 } from 'react-native';
 import type { RootStackParamList } from '../navigation/AppNavigator';
+import { useAppTheme } from '../theme/ThemeContext';
+import type { AppColors } from '../theme/ThemeContext';
 
 type Surah = {
   id: number;
@@ -33,6 +35,8 @@ const SURAHS_URL =
 
 export default function QuranScreen(): React.JSX.Element {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const { colors } = useAppTheme();
+  const styles = createStyles(colors);
   const [search, setSearch] = useState('');
   const [surahs, setSurahs] = useState<Surah[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -210,7 +214,7 @@ export default function QuranScreen(): React.JSX.Element {
                 value={search}
                 onChangeText={setSearch}
                 placeholder="Search Surah..."
-                placeholderTextColor="#94A19E"
+                placeholderTextColor={colors.textMuted}
                 style={styles.searchInput}
                 returnKeyType="search"
               />
@@ -238,7 +242,7 @@ export default function QuranScreen(): React.JSX.Element {
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
             {isLoading ? (
-              <ActivityIndicator color="#0F766E" />
+              <ActivityIndicator color={colors.accent} />
             ) : loadError ? (
               <>
                 <Text style={styles.emptyTitle}>Could not load Surahs</Text>
@@ -264,10 +268,10 @@ export default function QuranScreen(): React.JSX.Element {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: AppColors) => StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#F5F8F7',
+    backgroundColor: colors.background,
   },
 
   content: {
@@ -286,14 +290,14 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 30,
     fontWeight: '800',
-    color: '#12312E',
+    color: colors.text,
     letterSpacing: -0.5,
   },
 
   subtitle: {
     marginTop: 5,
     fontSize: 14,
-    color: '#71807D',
+    color: colors.textMuted,
   },
 
   headerIcon: {
@@ -302,12 +306,12 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#DCEFEA',
+    backgroundColor: colors.accentSoft,
   },
 
   headerIconText: {
     fontSize: 25,
-    color: '#0F766E',
+    color: colors.accent,
   },
 
   // Last Read
@@ -399,12 +403,12 @@ const styles = StyleSheet.create({
     height: 52,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.surface,
     borderRadius: 15,
     paddingHorizontal: 15,
     marginBottom: 25,
 
-    shadowColor: '#12312E',
+    shadowColor: colors.text,
     shadowOffset: {
       width: 0,
       height: 2,
@@ -416,7 +420,7 @@ const styles = StyleSheet.create({
 
   searchIcon: {
     fontSize: 25,
-    color: '#71807D',
+    color: colors.textMuted,
     marginRight: 8,
   },
 
@@ -424,12 +428,12 @@ const styles = StyleSheet.create({
     flex: 1,
     height: '100%',
     fontSize: 15,
-    color: '#263B38',
+    color: colors.textSecondary,
   },
 
   clearButton: {
     fontSize: 25,
-    color: '#94A19E',
+    color: colors.textMuted,
     paddingLeft: 8,
   },
 
@@ -444,12 +448,12 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 19,
     fontWeight: '700',
-    color: '#12312E',
+    color: colors.text,
   },
 
   sectionCount: {
     fontSize: 12,
-    color: '#8A9995',
+    color: colors.textMuted,
   },
 
   // Surah
@@ -457,12 +461,12 @@ const styles = StyleSheet.create({
     minHeight: 82,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.surface,
     borderRadius: 16,
     paddingHorizontal: 15,
     marginBottom: 10,
 
-    shadowColor: '#12312E',
+    shadowColor: colors.text,
     shadowOffset: {
       width: 0,
       height: 2,
@@ -478,14 +482,14 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#E7F3F0',
+    backgroundColor: colors.accentSoft,
     marginRight: 13,
   },
 
   numberText: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#0F766E',
+    color: colors.accent,
   },
 
   surahInfo: {
@@ -495,13 +499,7 @@ const styles = StyleSheet.create({
   surahName: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#263B38',
-  },
-
-  meaning: {
-    fontSize: 12,
-    color: '#7A8985',
-    marginTop: 2,
+    color: colors.textSecondary,
   },
 
   metaRow: {
@@ -512,20 +510,20 @@ const styles = StyleSheet.create({
 
   metaText: {
     fontSize: 10,
-    color: '#9AA5A2',
+    color: colors.textMuted,
   },
 
   dot: {
     width: 3,
     height: 3,
     borderRadius: 2,
-    backgroundColor: '#AAB5B2',
+    backgroundColor: colors.border,
     marginHorizontal: 6,
   },
 
   arabicName: {
     fontSize: 19,
-    color: '#0F766E',
+    color: colors.accent,
     marginLeft: 8,
   },
 
@@ -537,20 +535,20 @@ const styles = StyleSheet.create({
 
   emptyIcon: {
     fontSize: 40,
-    color: '#B3C3BF',
+    color: colors.textMuted,
   },
 
   emptyTitle: {
     marginTop: 12,
     fontSize: 17,
     fontWeight: '700',
-    color: '#52635F',
+    color: colors.textSecondary,
   },
 
   emptyText: {
     marginTop: 5,
     fontSize: 13,
-    color: '#8A9995',
+    color: colors.textMuted,
   },
 
   retryButton: {
