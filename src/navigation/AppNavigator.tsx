@@ -10,6 +10,8 @@ export type RootStackParamList = {
     arabicName: string;
     verses: number;
     revelationType: 'Meccan' | 'Medinan';
+    verseNumber: number;
+    startVerse: number;
   };
 };
 

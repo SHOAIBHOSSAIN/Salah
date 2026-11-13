@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { useNavigation } from '@react-navigation/native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
   ActivityIndicator,
@@ -13,6 +13,8 @@ import {
 import type { RootStackParamList } from '../navigation/AppNavigator';
 import { useAppTheme } from '../theme/ThemeContext';
 import type { AppColors } from '../theme/ThemeContext';
+import { loadLastRead, saveLastRead } from '../services/quranProgress';
+import type { QuranReadingPosition } from '../services/quranProgress';
 
 type Surah = {
   id: number;
@@ -42,6 +44,22 @@ export default function QuranScreen(): React.JSX.Element {
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
   const [loadAttempt, setLoadAttempt] = useState(0);
+  const [lastRead, setLastRead] = useState<QuranReadingPosition | null>(null);
+
+  useFocusEffect(
+    useCallback(() => {
+      let isActive = true;
+      loadLastRead().then(position => {
+        if (isActive) {
+          setLastRead(position);
+        }
+      });
+
+      return () => {
+        isActive = false;
+      };
+    }, []),
+  );
 
   useEffect(() => {
     let isActive = true;
@@ -105,21 +123,50 @@ export default function QuranScreen(): React.JSX.Element {
     });
   }, [search, surahs]);
 
-  const handleSurahPress = (surah: Surah) => {
-    navigation.navigate('QuranReader', {
+  const openSurah = async (surah: Surah, verseNumber = 1) => {
+    const startVerse = Math.min(Math.max(verseNumber, 1), surah.verses);
+    const position: QuranReadingPosition = {
       surahId: surah.id,
       surahName: surah.name,
       arabicName: surah.arabicName,
       verses: surah.verses,
       revelationType: surah.type,
+      verseNumber: startVerse,
+    };
+
+    try {
+      await saveLastRead(position);
+    } catch {
+      // Keep navigation available if local storage is unavailable.
+    }
+
+    setLastRead(position);
+    navigation.navigate('QuranReader', {
+      ...position,
+      startVerse,
     });
   };
+
+  const handleLastReadPress = () => {
+    if (lastRead) {
+      navigation.navigate('QuranReader', {
+        ...lastRead,
+        startVerse: lastRead.verseNumber,
+      });
+    } else if (surahs.length > 0) {
+      void openSurah(surahs[0]);
+    }
+  };
+
+  const progress = lastRead
+    ? Math.min((lastRead.verseNumber / lastRead.verses) * 100, 100)
+    : 0;
 
   const renderSurah = ({ item }: { item: Surah }) => (
     <TouchableOpacity
       style={styles.surahCard}
       activeOpacity={0.75}
-      onPress={() => handleSurahPress(item)}
+      onPress={() => void openSurah(item)}
     >
       {/* Number */}
       <View style={styles.numberContainer}>
@@ -175,6 +222,13 @@ export default function QuranScreen(): React.JSX.Element {
             <TouchableOpacity
               style={styles.lastReadCard}
               activeOpacity={0.85}
+              onPress={handleLastReadPress}
+              accessibilityRole="button"
+              accessibilityLabel={
+                lastRead
+                  ? `Continue reading ${lastRead.surahName}, verse ${lastRead.verseNumber}`
+                  : 'Choose a Surah to begin reading'
+              }
             >
               <View style={styles.lastReadContent}>
                 <Text style={styles.lastReadLabel}>
@@ -182,11 +236,13 @@ export default function QuranScreen(): React.JSX.Element {
                 </Text>
 
                 <Text style={styles.lastReadTitle}>
-                  Al-Baqarah
+                  {lastRead?.surahName ?? 'Start reading'}
                 </Text>
 
                 <Text style={styles.lastReadVerse}>
-                  Verse 255
+                  {lastRead
+                    ? `Verse ${lastRead.verseNumber} of ${lastRead.verses}`
+                    : 'Tap to choose a Surah'}
                 </Text>
               </View>
 
@@ -197,11 +253,11 @@ export default function QuranScreen(): React.JSX.Element {
               {/* Progress */}
               <View style={styles.progressWrapper}>
                 <View style={styles.progressTrack}>
-                  <View style={styles.progressValue} />
+                  <View style={[styles.progressValue, { width: `${progress}%` }]} />
                 </View>
 
                 <Text style={styles.progressText}>
-                  Continue reading
+                  {lastRead ? 'Continue reading' : 'Open the Surah list'}
                 </Text>
               </View>
             </TouchableOpacity>

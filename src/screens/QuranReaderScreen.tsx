@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -7,11 +7,14 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import type { ListViewToken } from '@react-native/virtualized-lists';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/AppNavigator';
 import { useAppTheme } from '../theme/ThemeContext';
 import type { AppColors } from '../theme/ThemeContext';
+import { saveLastRead } from '../services/quranProgress';
+import type { QuranReadingPosition } from '../services/quranProgress';
 
 type ReaderProps = NativeStackScreenProps<RootStackParamList, 'QuranReader'>;
 type Verse = { number: number; text: string };
@@ -31,6 +34,52 @@ export default function QuranReaderScreen(): React.JSX.Element {
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
   const [loadAttempt, setLoadAttempt] = useState(0);
+  const listRef = useRef<FlatList<Verse>>(null);
+  const restoredPosition = useRef(false);
+  const positionRef = useRef({ params, isLoading, restoredPosition: false });
+  positionRef.current = { params, isLoading, restoredPosition: restoredPosition.current };
+  const viewabilityConfig = useRef({ itemVisiblePercentThreshold: 40 }).current;
+
+  const onViewableItemsChanged = useRef(
+    ({ viewableItems }: { viewableItems: ListViewToken[] }) => {
+      const current = positionRef.current;
+      if (current.isLoading || !current.restoredPosition) {
+        return;
+      }
+
+      const firstVisibleVerse = viewableItems
+        .filter(token => token.isViewable && token.item)
+        .map(token => token.item as Verse)
+        .sort((first, second) => first.number - second.number)[0];
+
+      if (!firstVisibleVerse) {
+        return;
+      }
+
+      const position: QuranReadingPosition = {
+        surahId: current.params.surahId,
+        surahName: current.params.surahName,
+        arabicName: current.params.arabicName,
+        verses: current.params.verses,
+        revelationType: current.params.revelationType,
+        verseNumber: firstVisibleVerse.number,
+      };
+      void saveLastRead(position).catch(() => undefined);
+    },
+  ).current;
+
+  const restoreReadingPosition = useCallback(() => {
+    if (isLoading || verses.length === 0 || restoredPosition.current) {
+      return;
+    }
+
+    const index = Math.min(Math.max(params.startVerse - 1, 0), verses.length - 1);
+    restoredPosition.current = true;
+    positionRef.current.restoredPosition = true;
+    if (index > 0) {
+      listRef.current?.scrollToIndex({ index, animated: false, viewPosition: 0 });
+    }
+  }, [isLoading, params.startVerse, verses.length]);
 
   useEffect(() => {
     let isActive = true;
@@ -63,6 +112,8 @@ export default function QuranReaderScreen(): React.JSX.Element {
         }
 
         if (isActive) {
+          restoredPosition.current = false;
+          positionRef.current.restoredPosition = false;
           setVerses(fetchedVerses);
         }
       } catch {
@@ -82,6 +133,11 @@ export default function QuranReaderScreen(): React.JSX.Element {
     };
   }, [loadAttempt, params.surahId]);
 
+  useEffect(() => {
+    const frame = requestAnimationFrame(restoreReadingPosition);
+    return () => cancelAnimationFrame(frame);
+  }, [restoreReadingPosition]);
+
   const renderVerse = ({ item }: { item: Verse }) => (
     <View style={styles.verseRow}>
       <Text style={styles.verseText}>{item.text}</Text>
@@ -94,11 +150,24 @@ export default function QuranReaderScreen(): React.JSX.Element {
   return (
     <View style={styles.screen}>
       <FlatList
+        ref={listRef}
         data={verses}
         keyExtractor={item => item.number.toString()}
         renderItem={renderVerse}
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
+        onContentSizeChange={restoreReadingPosition}
+        onViewableItemsChanged={onViewableItemsChanged}
+        viewabilityConfig={viewabilityConfig}
+        onScrollToIndexFailed={({ index, averageItemLength }) => {
+          listRef.current?.scrollToOffset({
+            offset: averageItemLength * index,
+            animated: false,
+          });
+          requestAnimationFrame(() => {
+            listRef.current?.scrollToIndex({ index, animated: false, viewPosition: 0 });
+          });
+        }}
         ListHeaderComponent={
           <>
             <View style={styles.navigationHeader}>
