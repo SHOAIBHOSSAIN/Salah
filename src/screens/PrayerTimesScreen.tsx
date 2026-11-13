@@ -7,6 +7,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { usePrayerTimes } from '../hooks/usePrayerTimes';
 import { PRAYER_NAMES } from '../types/Interface';
 import { useAppTheme } from '../theme/ThemeContext';
@@ -19,30 +20,30 @@ export default function PrayerTimesScreen(): React.JSX.Element {
 
   if (loading && !today) {
     return (
-      <View style={styles.center}>
+      <SafeAreaView style={styles.center} edges={['top', 'left', 'right']}>
         <View style={styles.loadingIcon}>
           <Text style={styles.mosqueIcon}>☪</Text>
         </View>
         <ActivityIndicator size="large" color={colors.accent} />
         <Text style={styles.loadingText}>Fetching prayer times...</Text>
-      </View>
+      </SafeAreaView>
     );
   }
 
   if (error && !today) {
     return (
-      <View style={styles.center}>
+      <SafeAreaView style={styles.center} edges={['top', 'left', 'right']}>
         <View style={styles.errorIcon}>
           <Text style={styles.errorIconText}>!</Text>
         </View>
         <Text style={styles.errorTitle}>Something went wrong</Text>
         <Text style={styles.errorText}>{error}</Text>
-      </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <View style={styles.screen}>
+    <SafeAreaView style={styles.screen} edges={['top', 'left', 'right']}>
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.container}
@@ -101,7 +102,7 @@ export default function PrayerTimesScreen(): React.JSX.Element {
           </View>
         )}
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
 

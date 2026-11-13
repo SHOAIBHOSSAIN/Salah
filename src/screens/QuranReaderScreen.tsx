@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import type { ListViewToken } from '@react-native/virtualized-lists';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -148,7 +149,7 @@ export default function QuranReaderScreen(): React.JSX.Element {
   );
 
   return (
-    <View style={styles.screen}>
+    <SafeAreaView style={styles.screen}>
       <FlatList
         ref={listRef}
         data={verses}
@@ -216,7 +217,7 @@ export default function QuranReaderScreen(): React.JSX.Element {
           </View>
         }
       />
-    </View>
+    </SafeAreaView>
   );
 }
 

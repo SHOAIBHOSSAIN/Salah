@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import type { RootStackParamList } from '../navigation/AppNavigator';
 import { useAppTheme } from '../theme/ThemeContext';
 import type { AppColors } from '../theme/ThemeContext';
@@ -194,7 +195,7 @@ export default function QuranScreen(): React.JSX.Element {
   );
 
   return (
-    <View style={styles.screen}>
+    <SafeAreaView style={styles.screen} edges={['top', 'left', 'right']}>
       <FlatList
         data={filteredSurahs}
         keyExtractor={item => item.id.toString()}
@@ -320,7 +321,7 @@ export default function QuranScreen(): React.JSX.Element {
           </View>
         }
       />
-    </View>
+    </SafeAreaView>
   );
 }
 

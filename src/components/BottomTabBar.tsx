@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppTheme } from '../theme/ThemeContext';
 import type { AppColors } from '../theme/ThemeContext';
 
@@ -29,7 +30,7 @@ export default function BottomTabBar({
   const styles = createStyles(colors);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['bottom']}>
       <View style={styles.tabBar}>
         {tabs.map(tab => {
           const active = tab.key === activeTab;
@@ -69,7 +70,7 @@ export default function BottomTabBar({
           );
         })}
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
