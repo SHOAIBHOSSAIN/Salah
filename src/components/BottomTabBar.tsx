@@ -8,6 +8,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppTheme } from '../theme/ThemeContext';
 import type { AppColors } from '../theme/ThemeContext';
+import { FONT_SIZE, FONT_WEIGHT } from '../constants/fonts';
 
 export type TabItem = {
   key: string;
@@ -120,7 +121,7 @@ const createStyles = (colors: AppColors) => StyleSheet.create({
   },
 
   icon: {
-    fontSize: 20,
+    fontSize: FONT_SIZE.icon,
     color: colors.textMuted,
   },
 
@@ -130,13 +131,13 @@ const createStyles = (colors: AppColors) => StyleSheet.create({
 
   label: {
     marginTop: 3,
-    fontSize: 11,
-    fontWeight: '500',
+    fontSize: FONT_SIZE.caption,
+    fontWeight: FONT_WEIGHT.medium,
     color: colors.textMuted,
   },
 
   activeLabel: {
     color: colors.accent,
-    fontWeight: '700',
+    fontWeight: FONT_WEIGHT.bold,
   },
 });

@@ -12,6 +12,8 @@ import { usePrayerTimes } from '../hooks/usePrayerTimes';
 import { PRAYER_NAMES } from '../types/Interface';
 import { useAppTheme } from '../theme/ThemeContext';
 import type { AppColors } from '../theme/ThemeContext';
+import { COLORS } from '../constants/color';
+import { FONT_SIZE, FONT_WEIGHT } from '../constants/fonts';
 
 export default function PrayerTimesScreen(): React.JSX.Element {
   const { colors } = useAppTheme();
@@ -128,13 +130,13 @@ const createStyles = (colors: AppColors) => StyleSheet.create({
     marginBottom: 22,
   },
   greeting: {
-    fontSize: 28,
-    fontWeight: '800',
+    fontSize: FONT_SIZE.greeting,
+    fontWeight: FONT_WEIGHT.extraBold,
     color: colors.text,
   },
   subtitle: {
     marginTop: 5,
-    fontSize: 14,
+    fontSize: FONT_SIZE.body,
     color: colors.textMuted,
   },
   iconCircle: {
@@ -146,17 +148,17 @@ const createStyles = (colors: AppColors) => StyleSheet.create({
     alignItems: 'center',
   },
   iconText: {
-    fontSize: 24,
+    fontSize: FONT_SIZE.largeIcon,
     color: colors.accent,
   },
   dateCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#0F766E',
+    backgroundColor: COLORS.brand,
     borderRadius: 18,
     padding: 18,
     marginBottom: 28,
-    shadowColor: '#0F766E',
+    shadowColor: COLORS.brand,
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.18,
     shadowRadius: 10,
@@ -166,29 +168,29 @@ const createStyles = (colors: AppColors) => StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 13,
-    backgroundColor: 'rgba(255,255,255,0.16)',
+    backgroundColor: COLORS.brandOverlay,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 14,
   },
   calendarText: {
-    color: '#FFFFFF',
-    fontSize: 22,
+    color: COLORS.white,
+    fontSize: FONT_SIZE.cardTitle,
   },
   dateLabel: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: '#BDE5DE',
+    fontSize: FONT_SIZE.caption,
+    fontWeight: FONT_WEIGHT.bold,
+    color: COLORS.brandTextMuted,
     marginBottom: 3,
   },
   dateText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#FFFFFF',
+    fontSize: FONT_SIZE.button,
+    fontWeight: FONT_WEIGHT.semibold,
+    color: COLORS.white,
   },
   sectionTitle: {
-    fontSize: 19,
-    fontWeight: '700',
+    fontSize: FONT_SIZE.sectionTitle,
+    fontWeight: FONT_WEIGHT.bold,
     color: colors.text,
     marginBottom: 12,
   },
@@ -225,13 +227,13 @@ const createStyles = (colors: AppColors) => StyleSheet.create({
     marginRight: 13,
   },
   prayerName: {
-    fontSize: 17,
-    fontWeight: '600',
+    fontSize: FONT_SIZE.row,
+    fontWeight: FONT_WEIGHT.semibold,
     color: colors.textSecondary,
   },
   prayerTime: {
-    fontSize: 17,
-    fontWeight: '700',
+    fontSize: FONT_SIZE.row,
+    fontWeight: FONT_WEIGHT.bold,
     color: colors.accent,
     fontVariant: ['tabular-nums'],
   },
@@ -245,13 +247,13 @@ const createStyles = (colors: AppColors) => StyleSheet.create({
     marginBottom: 20,
   },
   mosqueIcon: {
-    fontSize: 34,
+    fontSize: FONT_SIZE.loadingIcon,
     color: colors.accent,
   },
   loadingText: {
     marginTop: 12,
     color: colors.textMuted,
-    fontSize: 15,
+    fontSize: FONT_SIZE.input,
   },
   errorIcon: {
     width: 60,
@@ -263,19 +265,19 @@ const createStyles = (colors: AppColors) => StyleSheet.create({
     marginBottom: 16,
   },
   errorIconText: {
-    fontSize: 28,
-    fontWeight: '800',
-    color: '#C0392B',
+    fontSize: FONT_SIZE.greeting,
+    fontWeight: FONT_WEIGHT.extraBold,
+    color: COLORS.danger,
   },
   errorTitle: {
-    fontSize: 19,
-    fontWeight: '700',
+    fontSize: FONT_SIZE.sectionTitle,
+    fontWeight: FONT_WEIGHT.bold,
     color: colors.textSecondary,
     marginBottom: 8,
   },
   errorText: {
     color: colors.textMuted,
-    fontSize: 14,
+    fontSize: FONT_SIZE.body,
     lineHeight: 21,
     textAlign: 'center',
   },
@@ -288,6 +290,6 @@ const createStyles = (colors: AppColors) => StyleSheet.create({
   updatingText: {
     marginLeft: 8,
     color: colors.textMuted,
-    fontSize: 13,
+    fontSize: FONT_SIZE.secondary,
   },
 });

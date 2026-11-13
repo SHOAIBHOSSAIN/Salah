@@ -1,55 +1,27 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useColorScheme } from 'react-native';
-
-export type AppColors = {
-  background: string;
-  surface: string;
-  surfaceRaised: string;
-  text: string;
-  textSecondary: string;
-  textMuted: string;
-  accent: string;
-  accentSoft: string;
-  border: string;
-};
+import { DARK_COLORS, LIGHT_COLORS } from '../constants/color';
+import type { AppColors } from '../constants/color';
+import { ARABIC_FONT_SIZE } from '../constants/fonts';
+export type { AppColors } from '../constants/color';
 
 type ThemeContextValue = {
   isDark: boolean;
   colors: AppColors;
+  arabicFontSize: number;
   setDarkMode: (enabled: boolean) => void;
-};
-
-const LIGHT_COLORS: AppColors = {
-  background: '#F5F8F7',
-  surface: '#FFFFFF',
-  surfaceRaised: '#EAF4F1',
-  text: '#12312E',
-  textSecondary: '#263B38',
-  textMuted: '#71807D',
-  accent: '#0F766E',
-  accentSoft: '#DCEFEA',
-  border: '#E1EAE7',
-};
-
-const DARK_COLORS: AppColors = {
-  background: '#111A17',
-  surface: '#1C2823',
-  surfaceRaised: '#263630',
-  text: '#EAF3EF',
-  textSecondary: '#D4E1DC',
-  textMuted: '#9AADA6',
-  accent: '#72D2BE',
-  accentSoft: '#29483F',
-  border: '#354740',
+  setArabicFontSize: (size: number) => void;
 };
 
 const DARK_MODE_KEY = 'settings.darkMode';
+const ARABIC_FONT_SIZE_KEY = 'settings.arabicFontSize';
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
 export function ThemeProvider({ children }: React.PropsWithChildren): React.JSX.Element {
   const systemScheme = useColorScheme();
   const [isDark, setIsDark] = useState(systemScheme === 'dark');
+  const [arabicFontSize, setArabicFontSizeState] = useState(ARABIC_FONT_SIZE.default);
 
   useEffect(() => {
     let isActive = true;
@@ -67,18 +39,47 @@ export function ThemeProvider({ children }: React.PropsWithChildren): React.JSX.
     };
   }, []);
 
+  useEffect(() => {
+    let isActive = true;
+
+    AsyncStorage.getItem(ARABIC_FONT_SIZE_KEY)
+      .then(value => {
+        const storedSize = Number(value);
+        if (isActive && value !== null && Number.isFinite(storedSize)) {
+          setArabicFontSizeState(
+            Math.min(Math.max(storedSize, ARABIC_FONT_SIZE.min), ARABIC_FONT_SIZE.max),
+          );
+        }
+      })
+      .catch(() => undefined);
+
+    return () => {
+      isActive = false;
+    };
+  }, []);
+
   const setDarkMode = useCallback((enabled: boolean) => {
     setIsDark(enabled);
     AsyncStorage.setItem(DARK_MODE_KEY, String(enabled)).catch(() => undefined);
+  }, []);
+
+  const setArabicFontSize = useCallback((size: number) => {
+    const boundedSize = Math.round(
+      Math.min(Math.max(size, ARABIC_FONT_SIZE.min), ARABIC_FONT_SIZE.max),
+    );
+    setArabicFontSizeState(boundedSize);
+    AsyncStorage.setItem(ARABIC_FONT_SIZE_KEY, String(boundedSize)).catch(() => undefined);
   }, []);
 
   const value = useMemo(
     () => ({
       isDark,
       colors: isDark ? DARK_COLORS : LIGHT_COLORS,
+      arabicFontSize,
       setDarkMode,
+      setArabicFontSize,
     }),
-    [isDark, setDarkMode],
+    [arabicFontSize, isDark, setArabicFontSize, setDarkMode],
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;

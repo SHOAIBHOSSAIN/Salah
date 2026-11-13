@@ -14,6 +14,8 @@ import type { NativeStackNavigationProp, NativeStackScreenProps } from '@react-n
 import type { RootStackParamList } from '../navigation/AppNavigator';
 import { useAppTheme } from '../theme/ThemeContext';
 import type { AppColors } from '../theme/ThemeContext';
+import { COLORS } from '../constants/color';
+import { FONT_SIZE, FONT_WEIGHT } from '../constants/fonts';
 import { saveLastRead } from '../services/quranProgress';
 import type { QuranReadingPosition } from '../services/quranProgress';
 
@@ -28,8 +30,8 @@ const SURAH_URL =
 
 export default function QuranReaderScreen(): React.JSX.Element {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const { colors } = useAppTheme();
-  const styles = createStyles(colors);
+  const { colors, arabicFontSize } = useAppTheme();
+  const styles = createStyles(colors, arabicFontSize);
   const { params } = useRoute<ReaderProps['route']>();
   const [verses, setVerses] = useState<Verse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -221,7 +223,7 @@ export default function QuranReaderScreen(): React.JSX.Element {
   );
 }
 
-const createStyles = (colors: AppColors) => StyleSheet.create({
+const createStyles = (colors: AppColors, arabicFontSize: number) => StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: colors.background,
@@ -244,13 +246,13 @@ const createStyles = (colors: AppColors) => StyleSheet.create({
   },
   backIcon: {
     color: colors.text,
-    fontSize: 36,
+    fontSize: FONT_SIZE.backIcon,
     lineHeight: 40,
   },
   headerLabel: {
     color: colors.textMuted,
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: FONT_SIZE.small,
+    fontWeight: FONT_WEIGHT.bold,
     letterSpacing: 1,
   },
   headerSpacer: {
@@ -265,17 +267,17 @@ const createStyles = (colors: AppColors) => StyleSheet.create({
   },
   surahName: {
     color: colors.text,
-    fontSize: 25,
-    fontWeight: '800',
+    fontSize: FONT_SIZE.headerIcon,
+    fontWeight: FONT_WEIGHT.extraBold,
   },
   arabicName: {
     color: colors.accent,
-    fontSize: 28,
+    fontSize: arabicFontSize,
     marginTop: 10,
   },
   surahMeta: {
     color: colors.textMuted,
-    fontSize: 13,
+    fontSize: FONT_SIZE.secondary,
     marginTop: 10,
   },
   versesHeading: {
@@ -286,12 +288,12 @@ const createStyles = (colors: AppColors) => StyleSheet.create({
   },
   versesHeadingText: {
     color: colors.text,
-    fontSize: 18,
-    fontWeight: '700',
+    fontSize: FONT_SIZE.section,
+    fontWeight: FONT_WEIGHT.bold,
   },
   versesCount: {
     color: colors.textMuted,
-    fontSize: 13,
+    fontSize: FONT_SIZE.secondary,
   },
   verseRow: {
     flexDirection: 'row',
@@ -303,8 +305,8 @@ const createStyles = (colors: AppColors) => StyleSheet.create({
   verseText: {
     flex: 1,
     color: colors.textSecondary,
-    fontSize: 27,
-    lineHeight: 52,
+    fontSize: arabicFontSize,
+    lineHeight: Math.round(arabicFontSize * 1.9),
     textAlign: 'right',
     writingDirection: 'rtl',
   },
@@ -320,8 +322,8 @@ const createStyles = (colors: AppColors) => StyleSheet.create({
   },
   verseNumberText: {
     color: colors.accent,
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: FONT_SIZE.small,
+    fontWeight: FONT_WEIGHT.bold,
   },
   emptyState: {
     alignItems: 'center',
@@ -329,12 +331,12 @@ const createStyles = (colors: AppColors) => StyleSheet.create({
   },
   emptyTitle: {
     color: colors.textSecondary,
-    fontSize: 17,
-    fontWeight: '700',
+    fontSize: FONT_SIZE.row,
+    fontWeight: FONT_WEIGHT.bold,
   },
   emptyText: {
     color: colors.textMuted,
-    fontSize: 13,
+    fontSize: FONT_SIZE.secondary,
     marginTop: 6,
   },
   retryButton: {
@@ -342,11 +344,11 @@ const createStyles = (colors: AppColors) => StyleSheet.create({
     paddingHorizontal: 18,
     paddingVertical: 9,
     borderRadius: 10,
-    backgroundColor: '#0F766E',
+    backgroundColor: COLORS.brand,
   },
   retryButtonText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: '700',
+    color: COLORS.white,
+    fontSize: FONT_SIZE.body,
+    fontWeight: FONT_WEIGHT.bold,
   },
 });

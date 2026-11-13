@@ -11,6 +11,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppTheme } from '../theme/ThemeContext';
 import type { AppColors } from '../theme/ThemeContext';
+import { COLORS } from '../constants/color';
+import { ARABIC_FONT_SIZE, FONT_SIZE, FONT_WEIGHT } from '../constants/fonts';
 
 type SettingRowProps = {
   icon: string;
@@ -66,7 +68,7 @@ function SettingRow({
 }
 
 export default function SettingsScreen(): React.JSX.Element {
-  const { isDark, setDarkMode, colors } = useAppTheme();
+  const { isDark, setDarkMode, arabicFontSize, setArabicFontSize, colors } = useAppTheme();
   const styles = createStyles(colors);
   const [notifications, setNotifications] = useState(true);
   const [prayerReminder, setPrayerReminder] = useState(true);
@@ -112,7 +114,7 @@ export default function SettingsScreen(): React.JSX.Element {
                   true: colors.accentSoft,
                 }}
                 thumbColor={
-                  notifications ? colors.accent : '#F4F4F4'
+                  notifications ? colors.accent : COLORS.inactive
                 }
               />
             }
@@ -133,7 +135,7 @@ export default function SettingsScreen(): React.JSX.Element {
                   true: colors.accentSoft,
                 }}
                 thumbColor={
-                  prayerReminder ? colors.accent : '#F4F4F4'
+                  prayerReminder ? colors.accent : COLORS.inactive
                 }
               />
             }
@@ -154,7 +156,7 @@ export default function SettingsScreen(): React.JSX.Element {
                   true: colors.accentSoft,
                 }}
                 thumbColor={
-                  isDark ? colors.accent : '#F4F4F4'
+                  isDark ? colors.accent : COLORS.inactive
                 }
               />
             }
@@ -207,8 +209,37 @@ export default function SettingsScreen(): React.JSX.Element {
           <SettingRow
             icon="🔤"
             title="Arabic Font Size"
-            subtitle="Medium"
-            onPress={() => showComingSoon('Arabic Font Size')}
+            subtitle={`${arabicFontSize} px`}
+            right={
+              <View style={styles.fontSizeControl}>
+                <TouchableOpacity
+                  accessibilityRole="button"
+                  accessibilityLabel="Decrease Arabic font size"
+                  accessibilityState={{ disabled: arabicFontSize <= ARABIC_FONT_SIZE.min }}
+                  disabled={arabicFontSize <= ARABIC_FONT_SIZE.min}
+                  onPress={() => setArabicFontSize(arabicFontSize - 1)}
+                  style={[
+                    styles.fontSizeButton,
+                    arabicFontSize <= ARABIC_FONT_SIZE.min && styles.fontSizeButtonDisabled,
+                  ]}
+                >
+                  <Text style={styles.fontSizeButtonText}>−</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  accessibilityRole="button"
+                  accessibilityLabel="Increase Arabic font size"
+                  accessibilityState={{ disabled: arabicFontSize >= ARABIC_FONT_SIZE.max }}
+                  disabled={arabicFontSize >= ARABIC_FONT_SIZE.max}
+                  onPress={() => setArabicFontSize(arabicFontSize + 1)}
+                  style={[
+                    styles.fontSizeButton,
+                    arabicFontSize >= ARABIC_FONT_SIZE.max && styles.fontSizeButtonDisabled,
+                  ]}
+                >
+                  <Text style={styles.fontSizeButtonText}>+</Text>
+                </TouchableOpacity>
+              </View>
+            }
           />
 
           <View style={styles.separator} />
@@ -285,15 +316,15 @@ const createStyles = (colors: AppColors) => StyleSheet.create({
   },
 
   title: {
-    fontSize: 30,
-    fontWeight: '800',
+    fontSize: FONT_SIZE.pageTitle,
+    fontWeight: FONT_WEIGHT.extraBold,
     color: colors.text,
     letterSpacing: -0.5,
   },
 
   subtitle: {
     marginTop: 5,
-    fontSize: 14,
+    fontSize: FONT_SIZE.body,
     color: colors.textMuted,
   },
 
@@ -307,14 +338,14 @@ const createStyles = (colors: AppColors) => StyleSheet.create({
   },
 
   headerIconText: {
-    fontSize: 23,
+    fontSize: FONT_SIZE.smallTitle,
     color: colors.accent,
   },
 
   // Sections
   sectionTitle: {
-    fontSize: 16,
-    fontWeight: '700',
+    fontSize: FONT_SIZE.button,
+    fontWeight: FONT_WEIGHT.bold,
     color: colors.textMuted,
     marginBottom: 10,
     marginLeft: 3,
@@ -354,7 +385,7 @@ const createStyles = (colors: AppColors) => StyleSheet.create({
   },
 
   rowIconText: {
-    fontSize: 18,
+    fontSize: FONT_SIZE.section,
   },
 
   rowContent: {
@@ -363,19 +394,44 @@ const createStyles = (colors: AppColors) => StyleSheet.create({
   },
 
   rowTitle: {
-    fontSize: 15,
+    fontSize: FONT_SIZE.input,
     color: colors.textSecondary,
   },
 
   rowSubtitle: {
-    fontSize: 11,
+    fontSize: FONT_SIZE.caption,
     color: colors.textMuted,
     marginTop: 3,
   },
 
+  fontSizeControl: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+
+  fontSizeButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.accentSoft,
+  },
+
+  fontSizeButtonDisabled: {
+    opacity: 0.4,
+  },
+
+  fontSizeButtonText: {
+    color: colors.accent,
+    fontSize: FONT_SIZE.section,
+    fontWeight: FONT_WEIGHT.bold,
+  },
+
   chevron: {
-    fontSize: 27,
-    fontWeight: '300',
+    fontSize: FONT_SIZE.verse,
+    fontWeight: FONT_WEIGHT.light,
     color: colors.textMuted,
     marginLeft: 5,
   },
@@ -394,19 +450,19 @@ const createStyles = (colors: AppColors) => StyleSheet.create({
   },
 
   appName: {
-    fontSize: 14,
-    fontWeight: '700',
+    fontSize: FONT_SIZE.body,
+    fontWeight: FONT_WEIGHT.bold,
     color: colors.textSecondary,
   },
 
   version: {
-    fontSize: 11,
+    fontSize: FONT_SIZE.caption,
     color: colors.textMuted,
     marginTop: 4,
   },
 
   footerMessage: {
-    fontSize: 12,
+    fontSize: FONT_SIZE.small,
     color: colors.textMuted,
     marginTop: 15,
   },

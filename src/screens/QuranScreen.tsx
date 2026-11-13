@@ -14,6 +14,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import type { RootStackParamList } from '../navigation/AppNavigator';
 import { useAppTheme } from '../theme/ThemeContext';
 import type { AppColors } from '../theme/ThemeContext';
+import { COLORS } from '../constants/color';
+import { FONT_SIZE, FONT_WEIGHT } from '../constants/fonts';
 import { loadLastRead, saveLastRead } from '../services/quranProgress';
 import type { QuranReadingPosition } from '../services/quranProgress';
 
@@ -345,15 +347,15 @@ const createStyles = (colors: AppColors) => StyleSheet.create({
   },
 
   title: {
-    fontSize: 30,
-    fontWeight: '800',
+    fontSize: FONT_SIZE.pageTitle,
+    fontWeight: FONT_WEIGHT.extraBold,
     color: colors.text,
     letterSpacing: -0.5,
   },
 
   subtitle: {
     marginTop: 5,
-    fontSize: 14,
+    fontSize: FONT_SIZE.body,
     color: colors.textMuted,
   },
 
@@ -367,7 +369,7 @@ const createStyles = (colors: AppColors) => StyleSheet.create({
   },
 
   headerIconText: {
-    fontSize: 25,
+    fontSize: FONT_SIZE.headerIcon,
     color: colors.accent,
   },
 
@@ -376,10 +378,10 @@ const createStyles = (colors: AppColors) => StyleSheet.create({
     minHeight: 150,
     padding: 20,
     borderRadius: 20,
-    backgroundColor: '#0F766E',
+    backgroundColor: COLORS.brand,
     marginBottom: 20,
 
-    shadowColor: '#0F766E',
+    shadowColor: COLORS.brand,
     shadowOffset: {
       width: 0,
       height: 6,
@@ -394,22 +396,22 @@ const createStyles = (colors: AppColors) => StyleSheet.create({
   },
 
   lastReadLabel: {
-    color: '#BDE5DE',
-    fontSize: 11,
-    fontWeight: '800',
+    color: COLORS.brandTextMuted,
+    fontSize: FONT_SIZE.caption,
+    fontWeight: FONT_WEIGHT.extraBold,
     letterSpacing: 1.2,
   },
 
   lastReadTitle: {
-    color: '#FFFFFF',
-    fontSize: 22,
-    fontWeight: '800',
+    color: COLORS.white,
+    fontSize: FONT_SIZE.cardTitle,
+    fontWeight: FONT_WEIGHT.extraBold,
     marginTop: 5,
   },
 
   lastReadVerse: {
-    color: '#D7EEEA',
-    fontSize: 13,
+    color: COLORS.brandTextSecondary,
+    fontSize: FONT_SIZE.secondary,
     marginTop: 3,
   },
 
@@ -420,14 +422,14 @@ const createStyles = (colors: AppColors) => StyleSheet.create({
     width: 46,
     height: 46,
     borderRadius: 23,
-    backgroundColor: 'rgba(255,255,255,0.16)',
+    backgroundColor: COLORS.brandOverlay,
     alignItems: 'center',
     justifyContent: 'center',
   },
 
   continueIcon: {
-    color: '#FFFFFF',
-    fontSize: 16,
+    color: COLORS.white,
+    fontSize: FONT_SIZE.button,
     marginLeft: 2,
   },
 
@@ -438,20 +440,20 @@ const createStyles = (colors: AppColors) => StyleSheet.create({
   progressTrack: {
     height: 5,
     borderRadius: 3,
-    backgroundColor: 'rgba(255,255,255,0.2)',
+    backgroundColor: COLORS.brandOverlaySoft,
     overflow: 'hidden',
   },
 
   progressValue: {
     width: '38%',
     height: '100%',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: COLORS.white,
     borderRadius: 3,
   },
 
   progressText: {
-    color: '#D7EEEA',
-    fontSize: 11,
+    color: COLORS.brandTextSecondary,
+    fontSize: FONT_SIZE.caption,
     marginTop: 7,
   },
 
@@ -476,7 +478,7 @@ const createStyles = (colors: AppColors) => StyleSheet.create({
   },
 
   searchIcon: {
-    fontSize: 25,
+    fontSize: FONT_SIZE.headerIcon,
     color: colors.textMuted,
     marginRight: 8,
   },
@@ -484,12 +486,12 @@ const createStyles = (colors: AppColors) => StyleSheet.create({
   searchInput: {
     flex: 1,
     height: '100%',
-    fontSize: 15,
+    fontSize: FONT_SIZE.input,
     color: colors.textSecondary,
   },
 
   clearButton: {
-    fontSize: 25,
+    fontSize: FONT_SIZE.headerIcon,
     color: colors.textMuted,
     paddingLeft: 8,
   },
@@ -503,13 +505,13 @@ const createStyles = (colors: AppColors) => StyleSheet.create({
   },
 
   sectionTitle: {
-    fontSize: 19,
-    fontWeight: '700',
+    fontSize: FONT_SIZE.sectionTitle,
+    fontWeight: FONT_WEIGHT.bold,
     color: colors.text,
   },
 
   sectionCount: {
-    fontSize: 12,
+    fontSize: FONT_SIZE.small,
     color: colors.textMuted,
   },
 
@@ -544,8 +546,8 @@ const createStyles = (colors: AppColors) => StyleSheet.create({
   },
 
   numberText: {
-    fontSize: 14,
-    fontWeight: '700',
+    fontSize: FONT_SIZE.body,
+    fontWeight: FONT_WEIGHT.bold,
     color: colors.accent,
   },
 
@@ -554,8 +556,8 @@ const createStyles = (colors: AppColors) => StyleSheet.create({
   },
 
   surahName: {
-    fontSize: 16,
-    fontWeight: '700',
+    fontSize: FONT_SIZE.button,
+    fontWeight: FONT_WEIGHT.bold,
     color: colors.textSecondary,
   },
 
@@ -566,7 +568,7 @@ const createStyles = (colors: AppColors) => StyleSheet.create({
   },
 
   metaText: {
-    fontSize: 10,
+    fontSize: FONT_SIZE.tiny,
     color: colors.textMuted,
   },
 
@@ -579,7 +581,7 @@ const createStyles = (colors: AppColors) => StyleSheet.create({
   },
 
   arabicName: {
-    fontSize: 19,
+    fontSize: FONT_SIZE.sectionTitle,
     color: colors.accent,
     marginLeft: 8,
   },
@@ -591,20 +593,20 @@ const createStyles = (colors: AppColors) => StyleSheet.create({
   },
 
   emptyIcon: {
-    fontSize: 40,
+    fontSize: FONT_SIZE.largeDisplay,
     color: colors.textMuted,
   },
 
   emptyTitle: {
     marginTop: 12,
-    fontSize: 17,
-    fontWeight: '700',
+    fontSize: FONT_SIZE.row,
+    fontWeight: FONT_WEIGHT.bold,
     color: colors.textSecondary,
   },
 
   emptyText: {
     marginTop: 5,
-    fontSize: 13,
+    fontSize: FONT_SIZE.secondary,
     color: colors.textMuted,
   },
 
@@ -613,12 +615,12 @@ const createStyles = (colors: AppColors) => StyleSheet.create({
     paddingHorizontal: 18,
     paddingVertical: 9,
     borderRadius: 10,
-    backgroundColor: '#0F766E',
+    backgroundColor: COLORS.brand,
   },
 
   retryButtonText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: '700',
+    color: COLORS.white,
+    fontSize: FONT_SIZE.body,
+    fontWeight: FONT_WEIGHT.bold,
   },
 });
