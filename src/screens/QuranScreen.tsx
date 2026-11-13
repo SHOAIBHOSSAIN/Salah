@@ -1,5 +1,8 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
+  ActivityIndicator,
   FlatList,
   StyleSheet,
   Text,
@@ -7,138 +10,105 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import type { RootStackParamList } from '../navigation/AppNavigator';
 
 type Surah = {
   id: number;
   name: string;
   arabicName: string;
-  meaning: string;
   verses: number;
   type: 'Meccan' | 'Medinan';
 };
 
-const SURAHS: Surah[] = [
-  {
-    id: 1,
-    name: 'Al-Fatihah',
-    arabicName: 'الفاتحة',
-    meaning: 'The Opening',
-    verses: 7,
-    type: 'Meccan',
-  },
-  {
-    id: 2,
-    name: 'Al-Baqarah',
-    arabicName: 'البقرة',
-    meaning: 'The Cow',
-    verses: 286,
-    type: 'Medinan',
-  },
-  {
-    id: 3,
-    name: 'Aal-E-Imran',
-    arabicName: 'آل عمران',
-    meaning: 'Family of Imran',
-    verses: 200,
-    type: 'Medinan',
-  },
-  {
-    id: 4,
-    name: 'An-Nisa',
-    arabicName: 'النساء',
-    meaning: 'The Women',
-    verses: 176,
-    type: 'Medinan',
-  },
-  {
-    id: 5,
-    name: 'Al-Maidah',
-    arabicName: 'المائدة',
-    meaning: 'The Table Spread',
-    verses: 120,
-    type: 'Medinan',
-  },
-  {
-    id: 6,
-    name: "Al-An'am",
-    arabicName: 'الأنعام',
-    meaning: 'The Cattle',
-    verses: 165,
-    type: 'Meccan',
-  },
-  {
-    id: 7,
-    name: "Al-A'raf",
-    arabicName: 'الأعراف',
-    meaning: 'The Heights',
-    verses: 206,
-    type: 'Meccan',
-  },
-  {
-    id: 8,
-    name: 'Al-Anfal',
-    arabicName: 'الأنفال',
-    meaning: 'The Spoils of War',
-    verses: 75,
-    type: 'Medinan',
-  },
-  {
-    id: 9,
-    name: 'At-Tawbah',
-    arabicName: 'التوبة',
-    meaning: 'The Repentance',
-    verses: 129,
-    type: 'Medinan',
-  },
-  {
-    id: 10,
-    name: 'Yunus',
-    arabicName: 'يونس',
-    meaning: 'Jonah',
-    verses: 109,
-    type: 'Meccan',
-  },
-  {
-    id: 11,
-    name: 'Hud',
-    arabicName: 'هود',
-    meaning: 'Hud',
-    verses: 123,
-    type: 'Meccan',
-  },
-  {
-    id: 12,
-    name: 'Yusuf',
-    arabicName: 'يوسف',
-    meaning: 'Joseph',
-    verses: 111,
-    type: 'Meccan',
-  },
-];
+type GitHubSurah = {
+  place: string;
+  count: number;
+  title: string;
+  titleAr: string;
+  index: string;
+};
+
+const SURAHS_URL =
+  'https://raw.githubusercontent.com/semarketir/quranjson/master/source/surah.json';
 
 export default function QuranScreen(): React.JSX.Element {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [search, setSearch] = useState('');
+  const [surahs, setSurahs] = useState<Surah[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
+  const [loadAttempt, setLoadAttempt] = useState(0);
+
+  useEffect(() => {
+    let isActive = true;
+
+    const fetchSurahs = async () => {
+      setIsLoading(true);
+      setLoadError(false);
+
+      try {
+        const response = await fetch(SURAHS_URL);
+        if (!response.ok) {
+          throw new Error('Unable to fetch Surahs');
+        }
+
+        const data = (await response.json()) as GitHubSurah[];
+        if (!Array.isArray(data)) {
+          throw new Error('Invalid Surah data');
+        }
+
+        const fetchedSurahs: Surah[] = data.map(surah => ({
+          id: Number(surah.index),
+          name: surah.title,
+          arabicName: surah.titleAr,
+          verses: surah.count,
+          type: surah.place === 'Mecca' ? 'Meccan' : 'Medinan',
+        }));
+
+        if (isActive) {
+          setSurahs(fetchedSurahs);
+        }
+      } catch {
+        if (isActive) {
+          setLoadError(true);
+        }
+      } finally {
+        if (isActive) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    fetchSurahs();
+    return () => {
+      isActive = false;
+    };
+  }, [loadAttempt]);
 
   const filteredSurahs = useMemo(() => {
     const query = search.trim().toLowerCase();
 
     if (!query) {
-      return SURAHS;
+      return surahs;
     }
 
-    return SURAHS.filter(surah => {
+    return surahs.filter(surah => {
       return (
         surah.name.toLowerCase().includes(query) ||
-        surah.meaning.toLowerCase().includes(query) ||
+        surah.arabicName.includes(query) ||
         String(surah.id).includes(query)
       );
     });
-  }, [search]);
+  }, [search, surahs]);
 
   const handleSurahPress = (surah: Surah) => {
-    // TODO:
-    // Navigate to QuranReader screen
-    console.log('Open Surah:', surah.id);
+    navigation.navigate('QuranReader', {
+      surahId: surah.id,
+      surahName: surah.name,
+      arabicName: surah.arabicName,
+      verses: surah.verses,
+      revelationType: surah.type,
+    });
   };
 
   const renderSurah = ({ item }: { item: Surah }) => (
@@ -155,8 +125,6 @@ export default function QuranScreen(): React.JSX.Element {
       {/* Details */}
       <View style={styles.surahInfo}>
         <Text style={styles.surahName}>{item.name}</Text>
-
-        <Text style={styles.meaning}>{item.meaning}</Text>
 
         <View style={styles.metaRow}>
           <Text style={styles.metaText}>{item.type}</Text>
@@ -262,22 +230,33 @@ export default function QuranScreen(): React.JSX.Element {
               <Text style={styles.sectionTitle}>Surahs</Text>
 
               <Text style={styles.sectionCount}>
-                114 Surahs
+                {surahs.length} Surahs
               </Text>
             </View>
           </>
         }
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyIcon}>⌕</Text>
-
-            <Text style={styles.emptyTitle}>
-              No Surah found
-            </Text>
-
-            <Text style={styles.emptyText}>
-              Try searching for another Surah.
-            </Text>
+            {isLoading ? (
+              <ActivityIndicator color="#0F766E" />
+            ) : loadError ? (
+              <>
+                <Text style={styles.emptyTitle}>Could not load Surahs</Text>
+                <Text style={styles.emptyText}>Check your connection and try again.</Text>
+                <TouchableOpacity
+                  style={styles.retryButton}
+                  onPress={() => setLoadAttempt(attempt => attempt + 1)}
+                >
+                  <Text style={styles.retryButtonText}>Retry</Text>
+                </TouchableOpacity>
+              </>
+            ) : (
+              <>
+                <Text style={styles.emptyIcon}>⌕</Text>
+                <Text style={styles.emptyTitle}>No Surah found</Text>
+                <Text style={styles.emptyText}>Try searching for another Surah.</Text>
+              </>
+            )}
           </View>
         }
       />
@@ -572,5 +551,19 @@ const styles = StyleSheet.create({
     marginTop: 5,
     fontSize: 13,
     color: '#8A9995',
+  },
+
+  retryButton: {
+    marginTop: 14,
+    paddingHorizontal: 18,
+    paddingVertical: 9,
+    borderRadius: 10,
+    backgroundColor: '#0F766E',
+  },
+
+  retryButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '700',
   },
 });
